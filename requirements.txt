@@ -1,0 +1,40 @@
+# ============================================================================
+# RETAIL BUSINESS INTELLIGENCE API - DEPENDENCIES
+# ============================================================================
+
+# Core FastAPI Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+
+# File Upload Handling
+python-multipart==0.0.6
+
+# Data Processing & Analysis
+pandas==2.1.4
+openpyxl==3.1.2  # Required for Excel (.xlsx/.xls) file support
+
+# Data Validation
+pydantic==2.5.3
+
+# ============================================================================
+# LLM API INTEGRATION
+# Uncomment when ready to integrate real AI consultant API
+# ============================================================================
+
+# For OpenAI GPT Models (GPT-4, GPT-3.5-turbo)
+# openai==1.10.0
+
+# For Anthropic Claude Models (Claude Sonnet, Opus)
+# anthropic==0.18.0
+
+# For Google Gemini Models
+# google-generativeai==0.3.2
+
+# ============================================================================
+# DEVELOPMENT DEPENDENCIES (Optional)
+# ============================================================================
+
+# Code formatting and linting
+# black==24.1.0
+# flake8==7.0.0
+# pytest==8.0.0  # For unit testing
