@@ -6,7 +6,7 @@
 
 ### POST
  ```{{base_url}}/analyze-business```
-### BODY
+#### BODY
 ```Form-Data: Key=file Value=type=file Desc=require filetype=.csv|.xlsx|.xls```
 #### to analyze your business with dataset of transactions
 
