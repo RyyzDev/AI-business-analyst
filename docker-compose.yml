@@ -1,18 +1,50 @@
 version: '3.8'
 
 services:
-  fastapi-api:
-    build: .
-    container_name: retail_bi_api
+  retail-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: retail-business-intelligence-api:latest
+    container_name: retail-api-production
+    
+    # Port mapping (host:container)
     ports:
       - "8000:8000"
-    env_file:
-      - .env
+    
+    # Environment variables (override .env if needed)
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PORT=8000
+      - WORKERS=4
+    
+    # Volume mounts (optional - for logs)
     volumes:
-      - .:/app
-    restart: always
+      - ./logs:/app/logs
+      - /tmp/uploads:/tmp/uploads
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Logging configuration
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+    
+    # Network
+    networks:
+      - retail-network
+
+networks:
+  retail-network:
+    driver: bridge

@@ -1,29 +1,56 @@
-# Menggunakan base image python yang ringan
-FROM python:3.10-slim
+# Stage 1: Builder
+FROM python:3.11-slim as builder
 
-# Mencegah Python membuat file .pyc dan memastikan output log langsung muncul
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Menentukan folder kerja di dalam container
+# Set working directory
 WORKDIR /app
 
-# Menginstal dependensi sistem yang diperlukan untuk pandas/openpyxl
+# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
+    gcc \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy file requirements terlebih dahulu agar Docker bisa melakukan caching layer
+# Copy requirements first (for better caching)
 COPY requirements.txt .
 
-# Install semua library dari requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir --user -r requirements.txt
 
-# Copy seluruh kode project ke dalam container
-COPY . .
+# Stage 2: Production
+FROM python:3.11-slim
 
-# Ekspos port yang digunakan FastAPI
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PORT=8000
+
+# Create non-root user for security
+RUN useradd -m -u 1000 appuser && \
+    mkdir -p /app /tmp/uploads && \
+    chown -R appuser:appuser /app /tmp/uploads
+
+# Set working directory
+WORKDIR /app
+
+# Copy Python dependencies from builder
+COPY --from=builder /root/.local /home/appuser/.local
+
+# Copy application code
+COPY --chown=appuser:appuser main.py .
+COPY --chown=appuser:appuser .env .
+
+# Switch to non-root user
+USER appuser
+
+# Add local bin to PATH
+ENV PATH=/home/appuser/.local/bin:$PATH
+
+# Expose port
 EXPOSE 8000
 
-# Perintah untuk menjalankan aplikasi menggunakan uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:8000/health', timeout=5)"
+
+# Run application with production settings
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]

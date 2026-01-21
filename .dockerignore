@@ -1,21 +1,68 @@
-# Python
-venv/
-.venv/
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
 
-# Environment
-.env
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
 
-# Editor / IDE
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# Docker
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+*.md
+docs/
+
+# Test files
+tests/
+test_*.py
+*_test.py
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Data files (don't include sample data in production)
+*.csv
+*.xlsx
+*.xls
+data/
+
+# Docker files (don't copy themselves)
 Dockerfile
 docker-compose.yml
-.git
-.gitignore
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Environment files (will be passed as env vars)
+# Note: Comment this line if you want to include .env in image
+# .env
