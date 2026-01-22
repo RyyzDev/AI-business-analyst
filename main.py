@@ -1,5 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, List, Any
 import pandas as pd
@@ -21,6 +22,26 @@ app = FastAPI(
     description="Stateless API for retail data analysis with AI-powered insights",
     version="1.0.0"
 )
+
+# ============================================================================
+# CORS
+# ============================================================================
+origins = [
+    "*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=true,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ============================================================================
+# LLMs Init
+# ============================================================================
+
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
